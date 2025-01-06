@@ -14,29 +14,33 @@ async def main():
     print(f"Телеграмм аккаунт подключен успешно: {me.username or me.first_name}")
 
     async def process_message(event):
+    while True:
         message = event.message.message
-        if 'UAH' in message and '%' in message:
-            print("Обрабатываем список заявок...")
+        print(f"Получено сообщение: {message}")
+
+        if message:
             deal_pattern = r"(/deal\S+).*?(-?\d+\.\d+%)"
             deals = re.findall(deal_pattern, message)
+
             if not deals:
                 print("Не удалось найти сделки в сообщении.")
-                return
+                await asyncio.sleep(5)  # Подождем немного перед повтором
+                await client.send_message(BOT_USERNAME, "Хочу купити")
+                continue
 
-            # Найти самую низкую наценку
             best_deal = min(deals, key=lambda x: float(x[1].replace('%', '')))
             percent = float(best_deal[1].replace('%', ''))
 
             if percent < 0:
                 print(f"Нужный процент найден: {percent}%. Нажимаем на {best_deal[0]}.")
                 await client.send_message(BOT_USERNAME, best_deal[0])
-                await asyncio.sleep(2)  # Подождем для получения ответа
+                await asyncio.sleep(2)
                 await client.send_message(BOT_USERNAME, 'Перейти до оплати')
                 print("Нужный процент найден, заявка принята, ожидает оплату.")
-                return
+                break
             else:
                 print(f"Нужный процент не найден. Самый низкий процент: {percent}%")
-                await asyncio.sleep(2)
+                await asyncio.sleep(5)
                 await client.send_message(BOT_USERNAME, "Хочу купити")
 
     @client.on(events.NewMessage(from_users=BOT_USERNAME))
