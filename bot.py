@@ -14,8 +14,8 @@ async def main():
     print(f"Телеграмм аккаунт подключен успешно: {me.username or me.first_name}")
 
     async def process_message(event):
-    while True:
-        message = event.message.message
+    while True:  # Цикл для повторной отправки команды
+        message = event.message.message  # Получаем сообщение
         print(f"Получено сообщение: {message}")
 
         if message:
@@ -24,10 +24,11 @@ async def main():
 
             if not deals:
                 print("Не удалось найти сделки в сообщении.")
-                await asyncio.sleep(5)  # Подождем немного перед повтором
+                await asyncio.sleep(5)  # Ждем немного перед повтором
                 await client.send_message(BOT_USERNAME, "Хочу купити")
                 continue
 
+            # Находим сделку с минимальным процентом
             best_deal = min(deals, key=lambda x: float(x[1].replace('%', '')))
             percent = float(best_deal[1].replace('%', ''))
 
@@ -42,6 +43,7 @@ async def main():
                 print(f"Нужный процент не найден. Самый низкий процент: {percent}%")
                 await asyncio.sleep(5)
                 await client.send_message(BOT_USERNAME, "Хочу купити")
+
 
     @client.on(events.NewMessage(from_users=BOT_USERNAME))
     async def handler(event):
