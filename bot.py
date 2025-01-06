@@ -2,8 +2,8 @@ from telethon import TelegramClient, events
 import asyncio
 import re
 
-API_ID = 'YOUR_API_ID'  # Замените на ваш API ID
-API_HASH = 'YOUR_API_HASH'  # Замените на ваш API Hash
+API_ID = '20873647'  # Замените на ваш API ID
+API_HASH = 'e4ea9ff38bf42ef6c4f307a7cc28b898'  # Замените на ваш API Hash
 BOT_USERNAME = 'kunacodebot'  # Telegram username бота
 
 client = TelegramClient('kunacodebot_session', API_ID, API_HASH)
