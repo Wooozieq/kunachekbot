@@ -3,8 +3,8 @@ from telethon.errors import FloodWaitError
 import asyncio
 import re
 
-API_ID = 'YOUR_API_ID'  # Замените на ваш API ID
-API_HASH = 'YOUR_API_HASH'  # Замените на ваш API Hash
+API_ID = '26996220'  # Замените на ваш API ID
+API_HASH = '8954457e71c11e4adb7aa891c03b9cc9'  # Замените на ваш API Hash
 BOT_USERNAME = 'kunacodebot'  # Telegram username бота
 
 client = TelegramClient('kunacodebot_session', API_ID, API_HASH)
