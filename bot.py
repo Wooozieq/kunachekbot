@@ -2,6 +2,7 @@ from telethon import TelegramClient, events
 from telethon.errors import FloodWaitError
 import asyncio
 import re
+import time
 
 API_ID = '26996220'  # Замените на ваш API ID
 API_HASH = '8954457e71c11e4adb7aa891c03b9cc9'  # Замените на ваш API Hash
@@ -15,13 +16,22 @@ async def process_bids():
 
     while True:
         try:
+            start_time = time.time()  # Засекаем время перед отправкой сообщения
+            
             # Отправляем сообщение "Хочу купити"
             await client.send_message(BOT_USERNAME, "Хочу купити")
             attempt_count += 1
             print(f"Попытка {attempt_count}: Сообщение 'Хочу купити' отправлено боту.")
-
-            # Ждем 5 секунд перед получением ответа
-            await asyncio.sleep(5)
+            
+            # Засекаем время после отправки
+            elapsed_time = time.time() - start_time
+            print(f"Время, затраченное на отправку: {elapsed_time:.2f} секунд")
+            
+            # Если прошло меньше 5 секунд, добавляем оставшееся время до 5 секунд
+            if elapsed_time < 5:
+                sleep_time = 5 - elapsed_time
+                print(f"Ждем ещё {sleep_time:.2f} секунд перед следующей попыткой.")
+                await asyncio.sleep(sleep_time)
 
             # Проверяем последние сообщения от бота
             async for message in client.iter_messages(BOT_USERNAME, limit=1):
@@ -74,6 +84,10 @@ async def main():
     await client.start()
     print("Телеграмм аккаунт подключен успешно.")
     await process_bids()
+
+if __name__ == '__main__':
+    with client:
+        client.loop.run_until_complete(main())
 
 if __name__ == '__main__':
     with client:
