@@ -13,7 +13,7 @@ async def main():
     me = await client.get_me()
     print(f"Телеграмм аккаунт подключен успешно: {me.username or me.first_name}")
 
-    async def process_message(event):
+async def process_message(event):
     while True:  # Цикл для повторной отправки команды
         message = event.message.message  # Получаем сообщение
         print(f"Получено сообщение: {message}")
