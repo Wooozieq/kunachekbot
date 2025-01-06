@@ -10,13 +10,16 @@ client = TelegramClient('kunacodebot_session', API_ID, API_HASH)
 
 async def process_bids():
     """Основной цикл обработки заявок"""
+    attempt_count = 0  # Счетчик попыток отправки команды "Хочу купити"
+
     while True:
         # Отправляем сообщение "Хочу купити"
         await client.send_message(BOT_USERNAME, "Хочу купити")
-        print("Сообщение 'Хочу купити' отправлено боту.")
-        
-        # Ждем 1 секунду перед получением ответа
-        await asyncio.sleep(1)
+        attempt_count += 1
+        print(f"Попытка {attempt_count}: Сообщение 'Хочу купити' отправлено боту.")
+
+        # Ждем 5 секунд перед получением ответа
+        await asyncio.sleep(5)
         
         # Проверяем последние сообщения от бота
         async for message in client.iter_messages(BOT_USERNAME, limit=1):
@@ -40,19 +43,25 @@ async def process_bids():
             
             if percent_value < 0:
                 print(f"Нужный процент найден: {percent_value}%. Нажимаем на {deal_command}.")
-                # Нажимаем команду сделки
+                # Немедленно нажимаем на команду сделки
                 await client.send_message(BOT_USERNAME, deal_command)
-                await asyncio.sleep(1)  # Ждем ответа бота
+                print(f"Команда {deal_command} отправлена.")
                 
-                # Ищем кнопку "Перейти до оплати"
+                # Ждем ответа с кнопкой "Перейти до оплати"
                 async for follow_up in client.iter_messages(BOT_USERNAME, limit=1):
                     if "Перейти до оплати" in follow_up.text or follow_up.buttons:
+                        print("Нажимаем на кнопку 'Перейти до оплати'.")
                         await follow_up.click(text="Перейти до оплати")
                         print("Кнопка 'Перейти до оплати' нажата. Процесс завершен.")
                         return
             else:
                 print(f"Нужный процент не найден. Самый низкий процент: {percent_value}%.")
-                await asyncio.sleep(5)  # Подождем перед повтором
+        
+        # Если достигнуто 25 попыток, делаем перерыв
+        if attempt_count >= 25:
+            print("Достигнуто 25 попыток. Ожидание 2 минуты перед повтором.")
+            await asyncio.sleep(120)  # Перерыв на 2 минуты
+            attempt_count = 0  # Сброс счетчика попыток
 
 async def main():
     """Главная функция программы"""
@@ -63,3 +72,4 @@ async def main():
 if __name__ == '__main__':
     with client:
         client.loop.run_until_complete(main())
+
